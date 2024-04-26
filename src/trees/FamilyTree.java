@@ -43,7 +43,7 @@ public class FamilyTree
         TreeNode getNodeWithName(String targetName)
         {
             // Does this node have the target name?
-            if (name == targetName)
+            if (name.equals(targetName))
                 return this;
                     
             // No, recurse. Check all children of this node.
@@ -118,8 +118,8 @@ public class FamilyTree
 
 		// Parse the input file. Create a FileReader that reads treeFile. Create a BufferedReader
 		// that reads from the FileReader.
-		FileReader fr = ???
-		BufferedReader br = ???
+		FileReader fr = new FileReader(treeFile);
+		BufferedReader br = new BufferedReader(fr);
 		String line;
 		while ((line = br.readLine()) != null)
 			addLine(line);
@@ -135,15 +135,15 @@ public class FamilyTree
 	private void addLine(String line) throws TreeException
 	{
 		// Extract parent and array of children.
-		int colonIndex = ?? should be the index of the colon in line.
+		int colonIndex = line.indexOf(":"); //should be the index of the colon in line.
 		if (colonIndex < 0)
-			?? throw a TreeException with a useful message
-		String parent = ?? The substring of line that starts at char #0 and ends just before colonIndex. Check the API for 
-				           class java.util.String, method substring(), if you need guidance.
-		String childrenString = ?? The substring of line that starts just after colonIndex and goes through the end of
-				                   the line. You'll use a different version of substring().
-		String[] childrenArray = ?? Call childrenString.split(). Check the API for details. The result will be an array
-				                    of strings, with the separating commas thrown away.
+			throw new TreeException("Not a valid line.");  //throw a TreeException with a useful message
+		String parent =  line.substring(0, colonIndex); //The substring of line that starts at char #0 and ends just before colonIndex. Check the API for 
+				                                        //class java.util.String, method substring(), if you need guidance.
+		String childrenString = line.substring(colonIndex + 1, line.length());  //The substring of line that starts just after colonIndex and goes through the end of
+				                                                              //the line. You'll use a different version of substring().
+		String[] childrenArray = childrenString.split(",");  //Call childrenString.split(). Check the API for details. The result will be an array
+				                                             //of strings, with the separating commas thrown away.
 		
 		// Find parent node. If root is null then the tree is empty and the
 		// parent node must be constructed. Otherwise the parent node should be 
@@ -153,13 +153,21 @@ public class FamilyTree
 			parentNode = root = new TreeNode(parent);
 		else
 		{
-			parentNode = root.?????  There's a method in Node that searches for a named node. 
-			??? If the parent node wasn't found, there must have been something wrong in the 
-				data file. Throw an exception.
+			parentNode = root.getNodeWithName(parent);  //There's a method in Node that searches for a named node. 
+			//If the parent node wasn't found, there must have been something wrong in the 
+			//data file. Throw an exception.
+			if (parentNode == null) {
+				throw new TreeException("Parent Node not found.");
+			}
 		}
 		
 		// Add child nodes to parentNode.
-		?? For each name in childrenArray, create a new node and add that node to parentNode.
+		// For each name in childrenArray, create a new node and add that node to parentNode.
+		
+		for (String child : childrenArray) {
+			TreeNode childNode = new TreeNode(child);
+			parentNode.addChild(childNode);
+		}
 	}
 	
 	
